@@ -22,7 +22,6 @@ const userController = () => {
                 const user = new User(req.body)
                 // sendEmail(req)
                 await user.save()
-                const token = await user.genToken();
                 let mailOptions={
                     from: 'jasmeen.33k@gmail.com',
                     to: req.body.email,
@@ -64,29 +63,27 @@ const userController = () => {
             const user = new User(req.user)
             res.send(user.getHide())
         },
-        async logout(req,res){
+        async logout(data){
           try {
-            const token = req.token
-            req.user.tokens = req.user.tokens.filter((tokenObj)=>{
-                return tokenObj.token !== token
-            }) 
-            await req.user.save()
-            res.status(200).send({
-                message:"logout successfully"
-            })
+            const user = await User.updateOne({_id:data.id},{
+                $set: {
+                    status:0
+                }})
+
+            return user
           } catch (error) {
-           res.status(500).send()   
+           return( error.message);   
           }
         },
-        async allUser(req,res)
+        async allUser()
         {
             try {
-                const allUsers =await User.find({status:1}).select('name email').exec()
+                const allUsers =await User.find({}).select('name email').exec()
                 
                 // console.log(allUsers)
-                res.status(200).send(allUsers)
+                return allUsers
             } catch (error) {
-                res.status(500).send()   
+                return error.message
             }
         }
     }
