@@ -55,33 +55,32 @@ messageController.getHistory = async (data) => {
     }
 }
 
-messageController.lastMessages = async (req,res) => {
-    console.log(req.body.id)
+messageController.lastMessages = async (id) => {
      messages.aggregate([
         {
             $match: {
-                or:[
-                    {'sender':new mongoose.Types.ObjectId(req.body.id)},{'receiver':new mongoose.Types.ObjectId(req.body.id)}
+                $or:[
+                    {'sender':new mongoose.Types.ObjectId(id)},{'receiver':new mongoose.Types.ObjectId(id)}
                 ]
             }
         },
-        // {
-        //     $sort:{date:-1}
-        // },
-        // {
-        //     $group:{
-        //         _id:"$conversationId",
-        //         sender:{$first: "$sender"},
-        //         receiver:{$first: "$receiver"},
-        //         message:{$first: "$message"},
-        //         date:{$first: "$date"}
-        //     }
-        // }
+        {
+            $sort:{date:-1}
+        },
+        {
+            $group:{
+                _id:"$conversationId",
+                sender:{$first: "$sender"},
+                receiver:{$first: "$receiver"},
+                message:{$first: "$message"},
+                date:{$first: "$date"}
+            }
+        }
         ]
     ).exec((err,result)=>{
-        if(err){ res.status(400).send(err.message)}
+        if(err){ return({error:err.message})}
         else{
-            res.status(200).send(result);
+            return(result);
         }
     })
     
