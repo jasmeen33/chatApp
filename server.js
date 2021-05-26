@@ -39,12 +39,13 @@ io.on('connection', (socket) => {
         
     });
     socket.on('loggedin',(user)=>{
+        usersConnected[user._id]=socket.id;
         userController().allUser().then(res=>{
             io.emit('updateUserList',res); 
         })
     })
     socket.on('chatMessage', function(data){
-        socket.to(data.receiver).emit('message', data);
+        socket.to(usersConnected[data.receiver]).emit('message', data);
         messageController.saveMessage(data);
       
      });
