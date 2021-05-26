@@ -80,14 +80,42 @@ const userController = () => {
             },
             async allUser(){
                 try {
-                    const allUsers =await User.find({}).select('name email').exec()
+                    const allUsers =await User.find({}).select('name email avator profileLink').exec()
+                     allUsers.forEach((user)=>{
+                    if(user.avator)
+                    {
+                        user.profileLink=`${user._id}/avator`
+                        user.avator = []
+                    }
+                   })
                     return allUsers
                     
                 } catch (error) {
                     return error.message
                      
                 }
+            },
+         async uploadProfile(req,res){
+            // console.log(req.file)
+            // console.log(req.user)
+           req.user.avator = req.file.buffer // buffer is property of file that contains binary form of file      
+           await req.user.save()
+           res.status(200).send()
+        },
+        async getProfile(req,res){
+            try {
+                const user = await User.findOne({_id:req.params.id})
+        
+                if (!user || !user.avator) {
+                    throw new Error()
+                }
+        
+                res.set('Content-Type', 'image/png')
+                res.send(user.avator)
+            } catch (e) {
+                res.status(404).send()
             }
+        }
         }
     }
 
