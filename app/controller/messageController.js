@@ -14,7 +14,7 @@ let messageController = {};
 messageController.saveMessage = async (data) => {
     try {
 
-        const cId = data.sender + data.receiver
+        const cId = [data.receiver, data.sender].sort().join('.')
         const message = new messages({
             sender: data.sender,
             receiver: data.receiver,
