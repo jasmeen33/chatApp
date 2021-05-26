@@ -64,33 +64,34 @@ const userController = () => {
             const user = new User(req.user)
             res.send(user.getHide())
         },
-        async logout(req,res){
-          try {
-            const token = req.token
-            req.user.tokens = req.user.tokens.filter((tokenObj)=>{
-                return tokenObj.token !== token
-            }) 
-            await req.user.save()
-            res.status(200).send({
-                message:"logout successfully"
-            })
-          } catch (error) {
-           res.status(500).send()   
-          }
-        },
-        async allUser(req,res)
-        {
-            try {
-                const allUsers =await User.find({status:1}).select('name email').exec()
+        async logout(data){
+              try {
+                const user = await User.updateOne({_id:data},{
+                    $set: {
+                        status:0
+                    }})
+    
+                return user
                 
-                // console.log(allUsers)
-                res.status(200).send(allUsers)
-            } catch (error) {
-                res.status(500).send()   
+              } catch (error) {
+               return( error.message);   
+               
+              }
+            },
+            async allUser(){
+                try {
+                    const allUsers =await User.find({}).select('name email').exec()
+                    return allUsers
+                    
+                } catch (error) {
+                    return error.message
+                     
+                }
             }
         }
     }
-}
+
 
 
 module.exports = userController
+
