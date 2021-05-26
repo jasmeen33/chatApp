@@ -55,6 +55,14 @@ const userSchema = mongoose.Schema({
         trim: true,
         default: 0
     },
+     avator: {
+        type: Buffer,
+        trim:true
+    },
+    profileLink:{
+        type : String,
+        trim : true
+    },
     tokens: [
         {
             token: {
@@ -76,7 +84,7 @@ userSchema.methods.getHide =function()
 
     delete userCopy.password
     delete userCopy.tokens
-
+    delete userCopy.avator
     return userCopy
 }
 
