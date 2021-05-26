@@ -19,6 +19,17 @@ app.use(cors());
     app.post('/login',userController().login)
     app.post('/msgsave',messageController.saveMessage)
     app.get('/getHistory',messageController.getHistory)
+    
+    app.post('/profileimage',auth,upload.single('imageUpload'),userController().uploadProfile,(error,req,res,next)=>{
+      //providing this to handle the errors from the upload.single() middleware
+     if(error){
+       res.status(400).send({
+         error:error.message
+       })
+     }
+   })
+
+   app.get('/:id/avator',userController().getProfile)
 }
 
 module.exports = routerInit
