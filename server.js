@@ -1,8 +1,5 @@
 const mongoose = require('mongoose')
 const express = require('express'), http = require('http');
-const socketAuthentication = require('../chatApp/app/middleware/socket');
-const messageController = require('../chatApp/app/controller/messageController')
-const userController = require('../chatApp/app/controller/userConroller')
 
 var app = express();
 var server = http.createServer(app);
@@ -27,7 +24,7 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useCrea
 
 const routerInit = require('./app/router/web')
 routerInit(app);
-io.use(socketAuthentication);
+
 io.on('connection', (socket) => {
     console.log('a user connected');
     socket.on('disconnect',()=>{
@@ -37,37 +34,39 @@ io.on('connection', (socket) => {
                 item.socketId != socket.id;
             }
         );
-        userController().logout(socket.id);
-        userController().allUser().then(res=>{
-            io.emit('updateUserList',res); 
+        Object.keys(usersConnected).forEach(key => {
+            if (usersConnected[key] == socket.id) delete usersConnected[key];
         })
-        
+        io.emit('updateUserList',connectedUsers);
     });
     socket.on('loggedin',(user)=>{
-        usersConnected[user._id] = socket.id;
-        userController().allUser().then(res=>{
-            io.emit('updateUserList',res); 
-        })
+        connectedUsers.push({...user});
+        usersConnected[user._id] = socket.id.toString();
+	
+        // console.log(connectedUsers);
+        // let users = connectedUsers.filter(
+        //     item =>{
+        //         item._id != user._id
+        //     }
+        // )
+        io.emit('updateUserList',connectedUsers);
     })
     socket.on('chatMessage', function(data){
-        // console.log(data)
-       
-        // console.log(data)
-        console.log(usersConnected)
+        console.log(data.receiver)
+        // user = connectedUsers.filter(
+        //     (item)=>{
+        //         if(item._id == data.receiver){
+        //             console.log(item.socketId);
+        //             socket.to(item.socketId).emit('message', data);
+        //             console.log(data.message)
+        //         }
+        //     }
+        // );
         socket.to(usersConnected[data.receiver]).emit('message', data);
-        messageController.saveMessage(data);
-      
      });
-     socket.on('getHistory',function(data){
-         console.log(data);
-          messageController.getHistory(data).then(res=>{
+    
+  });
 
-            //  console.log(res);
-             socket.emit('getMessages',res);
-         });
-        })
-        
-    });
 
 
 server.listen(port, () => {

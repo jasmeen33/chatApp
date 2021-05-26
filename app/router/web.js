@@ -13,12 +13,12 @@ app.use(cors());
     app.get('/userprofile',auth,userController().profile)
     app.get('/getusers',userController().allUser)
 
-    app.get('/userlogout',userController().logout)
+    app.get('/userlogout',auth,userController().logout)
 
     app.post('/register',userController().register)
     app.post('/login',userController().login)
     app.post('/msgsave',messageController.saveMessage)
-    app.post('/last',messageController.lastMessages)
+    app.get('/getHistory',messageController.getHistory)
 }
 
 module.exports = routerInit
