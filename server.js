@@ -32,11 +32,6 @@ io.on('connection', (socket) => {
     console.log('a user connected');
     socket.on('disconnect',()=>{
         console.log("a user disconnected");
-        connectedUsers = connectedUsers.filter(
-            (item)=>{
-                item.socketId != socket.id;
-            }
-        );
         userController().logout(socket.id);
         userController().allUser().then(res=>{
             io.emit('updateUserList',res); 
@@ -44,25 +39,18 @@ io.on('connection', (socket) => {
         
     });
     socket.on('loggedin',(user)=>{
-        usersConnected[user._id] = socket.id;
         userController().allUser().then(res=>{
             io.emit('updateUserList',res); 
         })
     })
     socket.on('chatMessage', function(data){
-        // console.log(data)
-       
-        // console.log(data)
-        console.log(usersConnected)
-        socket.to(usersConnected[data.receiver]).emit('message', data);
+        socket.to(data.receiver).emit('message', data);
         messageController.saveMessage(data);
       
      });
      socket.on('getHistory',function(data){
          console.log(data);
           messageController.getHistory(data).then(res=>{
-
-            //  console.log(res);
              socket.emit('getMessages',res);
          });
         })
