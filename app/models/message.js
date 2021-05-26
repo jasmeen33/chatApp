@@ -1,19 +1,27 @@
 const mongoose = require('mongoose');
 
 const messageSchema = new mongoose.Schema({
-    senderId: {
-        type: mongoose.Types.ObjectId,
-        required: true
+    sender: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        trim : true
       },
-      receiverId: {
-        type: mongoose.Types.ObjectId,
-        required: true
+      receiver: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        trim:true
+      },
+      conversationId: {
+        type:String
+
       },
       message: {
-        type: String
+        type: String,
+        required: true,
+        trim:true
       },
       
-      sendDate: {
+      date: {
         type: Date,
         default: Date.now
       }
