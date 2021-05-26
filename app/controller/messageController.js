@@ -1,5 +1,14 @@
 const messages = require('../models/message');
 const mongoose = require('mongoose')
+const cron = require('node-cron')
+
+cron.schedule('* 23 * * *',()=>{
+    messages.remove({}).then(()=>{
+        console.log("delete the messages at 12pm successfully")
+    }).catch((error)=>{
+        console.log(error)
+    })
+})
 let messageController = {};
 
 messageController.saveMessage = async (data) => {
