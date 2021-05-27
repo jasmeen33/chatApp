@@ -2,6 +2,7 @@ const userController = require('../controller/userConroller')
 const messageController = require('../controller/messageController')
 const auth = require('../middleware/auth')
 const cors = require('cors');
+const upload = require('../middleware/multer')
 const routerInit =(app)=>{
 app.use(cors());
     
