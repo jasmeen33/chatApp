@@ -44,22 +44,58 @@ const userController = () => {
             }
 
         },
-        async login(req, res) {
-            try {
-                // console.log(req.body)
-                const user = await User.findByCredentials(req.body.email, req.body.password)
-                user.status = 1
-                const token = await user.genToken();
-                res.status(200).send({ user:user.getHide(),token })
-
-            } catch (error) {
-                res.status(400).send({
-                    "error": error.message
-                })
+        async allUser(){
+                try {
+                    console.log(req.query.id);
+                    User.aggregate([
+                        {
+                            $lookup:{
+                                from:"messagemodels",
+                                let:{sid:"$_id"},
+                                pipeline: [
+                                    { $match:
+                                       { $expr:{
+                                          
+                                          $or:[
+                                                  {
+                                                    $eq:[  "$sender","$$sid"]
+                                                    
+                                                  },
+                                                   {
+                                                     $eq:[  "$receiver","$$sid"]
+                                                     
+                                                   }
+                                             ]
+                                       }
+                          
+                                       }
+                                    },
+                                     {
+                                          $sort:{date:-1}
+                                     },
+                                     {
+                                       $limit:1
+                                     },
+                                                          
+                                    { $project: {  _id: 0,conversationId:0,__v:0} }
+                                 ],
+                                as:"lastmsg"
+                            }
+                        }
+                    ]).exec((err,result)=>{
+                        if(err){ return(err.message)}
+                        else{
+                            return(result);
+                        }
+                    })
+                    
+                } catch (error) {
+                    return(error.message)
+                     
+                }
             }
-
-
-        },
+        }
+    },
         profile(req,res){
             const user = new User(req.user)
             res.send(user.getHide())
