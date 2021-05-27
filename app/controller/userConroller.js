@@ -85,7 +85,14 @@ const userController = () => {
                     ]).exec((err,result)=>{
                         if(err){ return(err.message)}
                         else{
-                            return(result);
+                            result.forEach((user)=>{
+                                if(user.avator)
+                                {
+                                    user.profileLink=`${user._id}/avator`
+                                    user.avator = []
+                                }
+                               })
+                               return result
                         }
                     })
                     
