@@ -111,7 +111,8 @@ const userController = () => {
               try {
                 const user = await User.updateOne({_id:data},{
                     $set: {
-                        status:0
+                        status:0,
+                        tokens:[]
                     }})
     
                 return user
@@ -120,23 +121,6 @@ const userController = () => {
                return( error.message);   
                
               }
-            },
-            async allUser(){
-                try {
-                    const allUsers =await User.find({}).select('name email avator profileLink').exec()
-                     allUsers.forEach((user)=>{
-                    if(user.avator)
-                    {
-                        user.profileLink=`${user._id}/avator`
-                        user.avator = []
-                    }
-                   })
-                    return allUsers
-                    
-                } catch (error) {
-                    return error.message
-                     
-                }
             },
          async uploadProfile(req,res){
             // console.log(req.file)
