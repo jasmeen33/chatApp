@@ -49,6 +49,9 @@ io.on('connection', (socket) => {
         messageController.saveMessage(data);
       
      });
+    socket.on('typing',function(data){
+         socket.emit('getTyping',data);
+     });
      socket.on('getHistory',function(data){
          console.log(data);
           messageController.getHistory(data).then(res=>{
