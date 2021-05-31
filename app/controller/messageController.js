@@ -37,10 +37,10 @@ messageController.getHistory = async (req,res) => {
             $and: [
                 {
                     sender: {
-                        $in: [data.sender, data.receiver]
+                        $in: [req.body.sender, req.body.receiver]
                     },
                     receiver: {
-                        $in: [data.sender, data.receiver]
+                        $in: [req.body.sender, req.body.receiver]
                     }
                 }
             ]
