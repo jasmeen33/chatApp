@@ -50,7 +50,7 @@ io.on('connection', (socket) => {
       
      });
     socket.on('typing',function(data){
-         socket.emit('getTyping',data);
+         socket.to(usersConnected[data.receiver]).emit('getTyping',data);
      });
      socket.on('getHistory',function(data){
          console.log(data);
