@@ -30,7 +30,7 @@ messageController.saveMessage = async (data) => {
     }
 }
 
-messageController.getHistory = async (data) => {
+messageController.getHistory = async (req,res) => {
     try {
 
         let msg = await messages.find({
@@ -46,15 +46,14 @@ messageController.getHistory = async (data) => {
             ]
         }).lean();
 
-        return msg;
+        res.status(200).send(msg);
     }
     catch (error) {
-        return ({
+        res.status(400).send({
             err: error.message
         })
     }
 }
-
 messageController.lastMessages = async (id) => {
      messages.aggregate([
         {
